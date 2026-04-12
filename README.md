@@ -3,7 +3,7 @@
 A minimal Linux desktop media launcher that searches and plays audio/video directly through mpv.
 
 ---
-<img width="431" height="173" alt="image" src="https://github.com/user-attachments/assets/47cafbf2-b497-48b2-8abe-2a894a6bb09e" />
+<img width="419" height="311" alt="image" src="https://github.com/user-attachments/assets/84b1b48b-f0e0-4e81-934b-1676a8656ccb" />
 
 
 Playbin is a lightweight desktop application that provides a simple search-to-play workflow for online media.
