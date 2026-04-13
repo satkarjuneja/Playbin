@@ -5,6 +5,7 @@ import os, sys
 import json
 import socket
 import time
+import threading
 
 
 def resource_path(name):
@@ -53,11 +54,17 @@ class AudioPlayerApp:
         # ---------------- UI ----------------
         self.entry = tk.Entry(self.root, width=50)
         self.entry.pack(pady=10)
-
+        
+        self.entry.bind("<Return>", self._on_enter) #Key bindings
+        self.entry.bind("<space>", self._on_space)
+        
+        
         self.controls = tk.Frame(self.root)
         self.controls.pack(pady=10)
 
-        tk.Button(self.controls, text="Play", command=self.play).pack(side="left")
+        self.play_btn = tk.Button(self.controls, text="Play", command=self.play)
+        self.play_btn.pack(side="left")        
+        
         tk.Button(self.controls, text="Stop", command=self.stop).pack(side="left")
 
         self.pause_btn = tk.Button(self.controls, text="Pause", command=self.toggle_pause)
@@ -167,6 +174,10 @@ class AudioPlayerApp:
 
     # ---------------- PAUSE ----------------
     
+    def _on_space(self,event):
+        if(self.playing==True):
+            self.pause_btn.invoke()
+    
     def toggle_pause(self):
         if not self.playing:
             return
@@ -175,24 +186,45 @@ class AudioPlayerApp:
         self.pause_btn.config(text="Play" if self.paused else "Pause")
 
     # ---------------- PLAY ----------------
-    def play(self):
-        query = self.entry.get().strip()
-        if not query:
-            return
-
-        video_url, audio_url = self.resolve_url(query, self.video)
+    def _on_enter(self, event):
+        self.play_btn.invoke()
+        self.playing=True
+    
+    def _start_mpv(self, video_url, audio_url, video):
         self.stop()
 
         args = ["mpv", f"--input-ipc-server={self.socket_path}"]
-        if not self.video:
+        if not video:
             args.append("--no-video")
         if audio_url:
             args.append(f"--audio-file={audio_url}")
         args.append(video_url)
 
-        self.mpv_process = subprocess.Popen(args)
+        try:
+            self.mpv_process = subprocess.Popen(args)
+        except FileNotFoundError:
+            self._handle_error("\033[31m MPV not found \033[0m")
+            return  
+              
         self.playing = True
+    
+    def _resolve_and_play(self, query, video):
+        video_url, audio_url = self.resolve_url(query, video)
 
+        # Back to Main Thread
+        self.root.after(0, self._start_mpv, video_url, audio_url, video)
+        
+    def play(self):
+        query = self.entry.get().strip()
+        if not query:
+            return
+
+        threading.Thread(
+            target=self._resolve_and_play,
+            args=(query, self.video),
+            daemon=True
+        ).start()
+        
 
     # ---------------- STOP ----------------
     def stop(self):
