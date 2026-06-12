@@ -1,9 +1,11 @@
 from player import Player
 from ui import UI
+from analyzer import Audio_Processing 
 
 
 def main():
-    player = Player()
+    AP=Audio_Processing()
+    player = Player(AP)
     ui = UI(player)
     ui.run()
 

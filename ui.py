@@ -1,62 +1,90 @@
 import tkinter as tk
 import math
+import numpy as np
 
 
 class UI:
     def __init__(self, player):
+        
         self.player = player
-
         self.root = tk.Tk()
         self.root.title("Playbin")
-
+        
+        #----------Analyzer Panel----------
+        self.disc_frame = tk.Frame(self.root)
+        self.disc_frame.pack()
+        self.bars = []
+        self.bar_canvas = tk.Canvas(self.disc_frame, width=170, height=150, bg="black")
+        self.bar_canvas.pack(side="left", padx=5,)
+        bar_labels = ["Bass", "Low-Mid", "High-Mid", "Treble"]
+        bar_width = 35
+        gap = 6
+        for i, label in enumerate(bar_labels):
+            x = gap + i * (bar_width + gap)
+            # background track
+            self.bar_canvas.create_rectangle(x, 10, x + bar_width, 130, fill="#222222", outline="")
+            # the bar itself
+            bar = self.bar_canvas.create_rectangle(x, 130, x + bar_width, 130, fill="#00ff99", outline="")
+            self.bars.append(bar)
+            self.bar_canvas.create_text(x + bar_width//2, 140, text=label, fill="white", font=("Arial", 7))
+            
         # ---------- DISC ----------
-        self.canvas = tk.Canvas(self.root, width=150, height=150, bg="black")
-        self.canvas.pack(pady=10)
-
+        self.canvas = tk.Canvas(self.disc_frame, width=150, height=150, bg="black")
+        self.canvas.pack(side="left", pady=10)
         self.angle = 0
         self.energy = 0.0
-
         self.outer = self.canvas.create_oval(10, 10, 140, 140, fill="#222222", outline="")
         self.mid   = self.canvas.create_oval(25, 25, 125, 125, fill="#2d2d2d", outline="")
         self.inner = self.canvas.create_oval(45, 45, 105, 105, fill="#3a3a3a", outline="")
         self.hub   = self.canvas.create_oval(68, 68, 82, 82, fill="#111111", outline="")
-
         self.spokes = []
         self.num_spokes = 16
+        
         for _ in range(self.num_spokes):
             self.spokes.append(self.canvas.create_line(75, 75, 75, 20, fill="#555555"))
-
+            
         # ---------- INPUT ----------
         self.entry = tk.Entry(self.root, width=50)
-        self.entry.pack(pady=10)
-
+        self.entry.pack(pady=5)
         self.entry.bind("<Return>", lambda e: self.play())
         self.entry.bind("<space>", lambda e: self.toggle_pause())
-
+        
         # ---------- CONTROLS ----------
         self.controls = tk.Frame(self.root)
-        self.controls.pack(pady=10)
-
+        self.controls.pack(pady=5)
         tk.Button(self.controls, text="Play", command=self.play).pack(side="left")
         tk.Button(self.controls, text="Stop", command=self.stop).pack(side="left")
         tk.Button(self.controls, text="Pause", command=self.toggle_pause).pack(side="left")
         tk.Button(self.controls, text="Video", command=self.toggle_video).pack(side="left")
-
+        
         self.indicator = tk.Canvas(self.controls, width=20, height=20, highlightthickness=0)
         self.indicator.pack(side="left")
         self.light = self.indicator.create_oval(5, 5, 15, 15, fill="red")
-
         self.animate_disc()
-
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
+        
 
     # ---------- ENERGY ----------
     def update_energy(self):
         target = 1.0 if ((self.player.is_playing() and not self.player.is_paused()) or self.player.start_spinning) else 0.0
         self.energy = 0.85 * self.energy + 0.15 * target
-
+        
+    # --------- Update Bars---------
+    def update_bars(self):
+        bands = self.player.analyzer.bands_output
+        if bands:
+            bar_width = 35
+            gap = 6
+            for i, bar in enumerate(self.bars):
+                # log scaling — matches human perception
+                val = np.log1p(bands[i]) / np.log1p(500)
+                height = min(val, 1.0) * 120
+                x = gap + i * (bar_width + gap)
+                self.bar_canvas.coords(bar, x, 130 - height, x + bar_width, 130)
+            
     # ---------- ANIMATION ----------
     def animate_disc(self):
+        self.update_bars()
         self.update_energy()
 
         if self.energy > 0.01:
@@ -105,6 +133,7 @@ class UI:
             self.light,
             fill="green" if self.player.video_enabled() else "red"
         )
+        
 
     # ---------- CLOSE ----------
     def on_close(self):

@@ -4,10 +4,10 @@ from engine import MPVEngine
 
 
 class Player:
-    def __init__(self):
+    def __init__(self,analyzer):
         self.resolver = Resolver()
         self.engine = MPVEngine()
-
+        self.analyzer=analyzer
         self.playing = False
         self.paused = False
         self.video = False
@@ -38,6 +38,7 @@ class Player:
             daemon=True
         ).start()
         
+        
         self.start_spinning=True
         
 
@@ -48,12 +49,15 @@ class Player:
             return
 
         self.engine.play(video_url, audio_url, self.video)
+        self.analyzer.start_analyzer_thread()
 
         self.playing = True
         self.paused = False
 
     def stop(self):
         self.engine.stop()
+        self.analyzer.stop_analyzer_thread()
+        self.start_spinning=False
         self.playing = False
         self.paused = False
 
