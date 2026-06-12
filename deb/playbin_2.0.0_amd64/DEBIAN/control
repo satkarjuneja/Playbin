@@ -1,0 +1,10 @@
+Package: playbin
+Version: 2.0.0
+Section: sound
+Priority: optional
+Architecture: amd64
+Depends: mpv, pulseaudio-utils
+Maintainer: Satkar Juneja
+Description: Audio player and visualizer
+ Playbin audio player and visualizer.
+ 
