@@ -41,7 +41,7 @@ class Audio_Processing:
         "--rate=48000",
         "--channels=1"],
         stdout=subprocess.PIPE,
-        stderr=subprocess.DEVNULL,)
+        stderr=subprocess.PIPE,)
     
     def read_pcm(self): #Pulse Code Modulation 
         while(True):

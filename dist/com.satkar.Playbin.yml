@@ -1,0 +1,21 @@
+app-id: com.satkar.Playbin
+runtime: org.freedesktop.Platform
+runtime-version: "25.08"
+sdk: org.freedesktop.Sdk
+
+command: playbin
+
+finish-args:
+  - --share=network
+  - --socket=pulseaudio
+  - --socket=x11
+  - --socket=wayland
+  
+modules:
+  - name: playbin
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 playbin /app/bin/playbin
+    sources:
+      - type: file
+        path: playbin
