@@ -10,6 +10,9 @@ class UI:
         self.root = tk.Tk()
         self.root.title("Playbin")
         
+        logo = tk.PhotoImage(file="Playbin.png")
+        self.root.iconphoto(False, logo)
+        
         #----------Analyzer Panel----------
         self.disc_frame = tk.Frame(self.root)
         self.disc_frame.pack()
