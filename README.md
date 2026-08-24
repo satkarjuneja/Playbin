@@ -1,3 +1,8 @@
+<p align="center">
+  <img src="Playbin.png" alt="Project Logo" width="600">
+</p>
+
+
 # Playbin
 
 A minimal Linux desktop media launcher that searches and plays audio/video directly through mpv.
