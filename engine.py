@@ -9,6 +9,7 @@ class MPVEngine:
         self.socket_path = socket_path
         self.ipc = None
         self.process = None
+        self.loop_enabled=False
 
     # ---------- INTERNAL ----------
     def _ensure_ipc(self):
@@ -46,6 +47,9 @@ class MPVEngine:
 
         if audio_url:
             args.append(f"--audio-file={audio_url}")
+            
+        if self.loop_enabled:
+            args.append("--loop-file=inf")
 
         args.append(video_url)
 
@@ -70,6 +74,9 @@ class MPVEngine:
 
     def set_pause(self, pause: bool):
         self._command(["set_property", "pause", "yes" if pause else "no"])
+        
+    def set_loop(self, loop: bool):
+        self.loop_enabled=not self.loop_enabled
   
        
         

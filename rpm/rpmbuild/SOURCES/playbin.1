@@ -1,0 +1,54 @@
+.TH PLAYBIN 1 "August 2026" "playbin 2.0.1" "User Commands"
+.SH NAME
+playbin \- audio player and visualizer
+.SH SYNOPSIS
+.B playbin
+.SH DESCRIPTION
+.B playbin
+is a lightweight desktop audio player and visualizer built on top of
+.BR mpv (1)
+and
+.BR yt-dlp (1).
+It resolves a search query or URL to a playable stream and displays a
+real-time frequency-band visualizer alongside standard playback controls.
+.SH USAGE
+On launch, playbin opens a window with a text entry field and a set of
+controls.
+.TP
+.B Entry field
+Type a search query or a direct URL and press
+.B Enter
+to play it.
+.TP
+.B Play
+Resolves and plays the current entry field contents.
+.TP
+.B Stop
+Stops playback and terminates the underlying mpv process.
+.TP
+.B Pause
+Toggles playback between paused and playing. Can also be triggered by
+pressing
+.B Space
+while the entry field is focused.
+.TP
+.B Video
+Toggles whether video is rendered alongside audio, or audio-only playback
+is used.
+.TP
+.B Loop
+Toggles whether the current track repeats indefinitely once playback ends.
+.SH FILES
+.TP
+.I /tmp/mpvsocket
+Unix domain socket used for IPC between playbin and the underlying mpv
+process.
+.SH SEE ALSO
+.BR mpv (1),
+.BR yt-dlp (1)
+.SH BUGS
+Report bugs at
+.UR https://github.com/satkarjuneja/playbin
+.UE
+.SH AUTHOR
+Satkar Juneja

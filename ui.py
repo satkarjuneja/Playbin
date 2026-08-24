@@ -1,6 +1,7 @@
 import tkinter as tk
 import math
 import numpy as np
+import resolver as RESOLVE
 
 
 class UI:
@@ -9,9 +10,11 @@ class UI:
         self.player = player
         self.root = tk.Tk()
         self.root.title("Playbin")
-        
-        logo = tk.PhotoImage(file="Playbin.png")
+        logo_path=RESOLVE.resource_path('Playbin.png')
+        logo = tk.PhotoImage(file=logo_path)
         self.root.iconphoto(False, logo)
+        
+        self.loop_enabled = False
         
         #----------Analyzer Panel----------
         self.disc_frame = tk.Frame(self.root)
@@ -55,6 +58,10 @@ class UI:
         # ---------- CONTROLS ----------
         self.controls = tk.Frame(self.root)
         self.controls.pack(pady=5)
+        
+        self.loop_button = tk.Button(self.controls, text="Loop", command=self.toggle_loop)
+        self.loop_button.pack(side="left")
+        
         tk.Button(self.controls, text="Play", command=self.play).pack(side="left")
         tk.Button(self.controls, text="Stop", command=self.stop).pack(side="left")
         tk.Button(self.controls, text="Pause", command=self.toggle_pause).pack(side="left")
@@ -129,7 +136,12 @@ class UI:
 
     def toggle_pause(self):
         self.player.toggle_pause()
-
+        
+    def toggle_loop(self):
+        self.loop_enabled = not self.loop_enabled
+        self.player.engine.set_loop(self.loop_enabled)
+        self.loop_button.config(relief="sunken" if self.loop_enabled else "raised")
+        
     def toggle_video(self):
         self.player.toggle_video()
         self.indicator.itemconfig(

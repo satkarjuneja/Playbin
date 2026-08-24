@@ -5,7 +5,7 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[('yt-dlp', '.')],
-    datas=[],
+    datas=[('Playbin.png', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
